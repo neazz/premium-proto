@@ -1,0 +1,213 @@
+/* Оформление заказа (ТЗ 5): раскладка по паттернам (07_Референсы/паттерны/корзина.md). Компоненты — Basecoat
+   (field, combobox, radio-group карточками, item, card, checkbox), здесь только раскладка. Токены — tokens.css */
+
+.checkout { padding-bottom: 3rem; @media (min-width: 768px) { padding-bottom: 4rem; } }
+
+/* Форма слева (до 46 rem), сводка справа (22 rem, прилипает) — от 1080. Уже — сводка свёрнутой строкой над формой */
+.checkout-layout {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  @media (min-width: 1080px) { grid-template-columns: minmax(0, 46rem) 22rem; justify-content: space-between; align-items: start; gap: 3rem; }
+}
+.checkout-main { display: grid; gap: 1.5rem; min-width: 0; }
+
+/* «Уже покупали у нас? Войдите» — строка над формой, форма входа раскрывается под ней */
+.checkout-login {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.checkout-login__lead { display: flex; align-items: flex-start; gap: 0.5rem; min-width: 0; flex: 1 1 18rem; font-size: var(--text-sm); & svg { margin-top: 0.125rem; color: var(--muted-foreground); } }
+.checkout-login__form {
+  display: grid;
+  flex: 1 1 100%;
+  gap: 1rem;
+  @media (min-width: 768px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.checkout-login__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; @media (min-width: 768px) { grid-column: 1 / -1; } }
+
+/* Шаги формы: номер в кружке и заголовок; между шагами — линия */
+.checkout-step { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+.checkout-step + .checkout-step { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+.checkout-step__title { display: flex; align-items: center; gap: 0.75rem; font-size: var(--text-xl); font-weight: 600; line-height: 1.3; }
+.checkout-step__num {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Карточки выбора (premium_choice) — две в ряд, когда хватает места */
+.checkout-form { container: checkout / inline-size; }
+.checkout-choices { display: grid; gap: 0.75rem; @container checkout (min-width: 32rem) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.checkout-companies { display: grid; gap: 0.75rem; }
+.checkout-companies [data-title] svg { display: inline; margin-right: 0.25rem; vertical-align: -0.125em; }
+.checkout-company { display: grid; gap: 1rem; }
+.checkout-new-company { display: grid; gap: 1rem; justify-items: stretch; }
+.checkout-manual { justify-self: start; height: auto; padding: 0; }
+.checkout-hint { display: flex; align-items: flex-start; gap: 0.5rem; color: var(--muted-foreground); font-size: var(--text-sm); & svg { margin-top: 0.125rem; } }
+.checkout-found { gap: 0.75rem 1rem; padding: 0.875rem 1rem; border-radius: var(--radius); & > figure { color: var(--muted-foreground); } & p { line-clamp: 3; -webkit-line-clamp: 3; } }
+
+/* Сетка полей: две колонки, когда форма шире 32 rem; длинное значение обрезается, а не распирает колонку */
+.checkout-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem 1rem;
+  @container checkout (min-width: 32rem) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  & > .is-wide { @container checkout (min-width: 32rem) { grid-column: 1 / -1; } }
+}
+.checkout .field { min-width: 0; }
+/* Звёздочка у поля, чью обязательность меняет скрипт (КПП у ИП) — только пока поле обязательно */
+.checkout .field:has(input:not(:required, [type='hidden'])) .req-toggle { display: none; }
+/* Подсказки Dadata (combobox): пока подсказок нет, пустой список не показываем; длинные варианты переносятся */
+.checkout .combobox[data-suggest-box] [data-popover]:not(:has([role='option'])) { display: none; }
+.checkout .combobox[data-suggest-box] [role='option'] { white-space: normal; }
+
+/* Вес и машина — плашка с грузовиком; тяжелее одного рейса — янтарная */
+.checkout-weight {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  & > svg { margin-top: 0.0625rem; color: var(--muted-foreground); }
+  &.is-compact { padding: 0.625rem 0.75rem; font-size: var(--text-xs); font-weight: 400; }
+  &.is-over { background: color-mix(in oklab, var(--warning) 14%, var(--background)); & > svg { color: color-mix(in oklab, var(--warning), black 35%); } }
+}
+.checkout-panel { display: grid; gap: 0.75rem; }
+.checkout-panel__title { display: flex; align-items: flex-start; gap: 0.5rem; font-weight: 500; & svg { margin-top: 0.1875rem; color: var(--muted-foreground); } }
+.checkout-panel__text { max-width: 65ch; color: var(--muted-foreground); font-size: var(--text-sm); line-height: 1.5; }
+.checkout-invoice { gap: 0.75rem 1rem; padding: 1rem; border-radius: var(--radius); & > figure { color: var(--muted-foreground); } & p { line-clamp: none; -webkit-line-clamp: unset; } }
+
+/* Сводка — карточка Basecoat. От 1080 — справа и прилипает; уже — над формой, свёрнута в строку-кнопку */
+.checkout-summary {
+  gap: 0;
+  padding-block: 0;
+  @media (max-width: 1079px) { order: -1; }
+  @media (min-width: 1080px) { position: sticky; top: calc(var(--header-sticky) + 1rem); }
+}
+.checkout-summary__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+  &:hover { background: var(--muted); }
+  &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  & b { margin-left: auto; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  &[aria-expanded='true'] .nav-chevron { rotate: 180deg; }
+  @media (min-width: 1080px) { display: none; }
+}
+.checkout-summary__toggle-label { min-width: 0; overflow: hidden; font-size: var(--text-sm); font-weight: 500; white-space: nowrap; text-overflow: ellipsis; }
+.checkout-summary__head {
+  display: none;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.25rem 0;
+  & h2 { font-size: var(--text-lg); font-weight: 600; }
+  @media (min-width: 1080px) { display: flex; }
+}
+.checkout-summary__body {
+  display: grid;
+  gap: 1rem;
+  padding-block: 0.25rem 1rem;
+  /* до 1080 сводка свёрнута в строку и раскрывается кнопкой (data-open у карточки, script.js); от 1080 открыта всегда.
+     Не атрибут hidden: у него в Tailwind display: none !important в слое base — его не перебить */
+  @media (max-width: 1079px) { .checkout-summary:not([data-open]) & { display: none; } }
+  @media (min-width: 1080px) { padding-block: 1rem; }
+}
+.checkout-totals {
+  display: grid;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: var(--text-sm);
+  & > div { display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: 1rem; }
+  & dt { color: var(--muted-foreground); }
+  & dd { margin: 0 0 0 auto; font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  & .is-total { align-items: baseline; margin-top: 0.25rem; padding-top: 0.875rem; border-top: 1px solid var(--border); }
+  & .is-total dt { color: var(--foreground); font-size: var(--text-base); font-weight: 600; }
+  & .is-total dd { font-size: var(--text-2xl); font-weight: 700; }
+}
+
+/* Товары в сводке: фото 40 px, название в одну строку и сумма справа, под ними количество × цена. Длинный список
+   прокручивается внутри карточки. Строка — ссылка целиком (растянутая ссылка названия), наведение — фон строки */
+.checkout-lines { display: grid; max-height: 15rem; margin: 0 -0.5rem; padding: 0; overflow-y: auto; list-style: none; }
+.checkout-line {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: calc(var(--radius) - 2px);
+  transition: background-color var(--duration-fast) var(--ease-out);
+  & + &::before { content: ''; position: absolute; top: 0; inset-inline: 0.5rem; border-top: 1px solid var(--border); transition: opacity var(--duration-fast) var(--ease-out); }
+  &:hover { background: var(--muted); }
+  &:hover::before, &:hover + &::before { opacity: 0; }
+  & figure { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; overflow: hidden; padding: 0.125rem; border-radius: calc(var(--radius) - 2px); background: var(--surface); }
+  & figure.is-texture { padding: 0; & img { object-fit: cover; mix-blend-mode: normal; } }
+  & img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+}
+.checkout-line__name { overflow: hidden; font-size: var(--text-sm); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.checkout-line__meta { margin-top: 0.125rem; overflow: hidden; color: var(--muted-foreground); font-size: var(--text-xs); text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.checkout-line__sum { font-size: var(--text-sm); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Кнопка: от 1080 — в карточке сводки; уже — прибита к низу экрана вместе с суммой */
+.checkout-summary__footer {
+  display: grid;
+  gap: 0.5rem;
+  padding-block: 0 1.25rem;
+  @media (max-width: 1079px) {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 30;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.25rem 1rem;
+    padding: 0.625rem var(--gutter) calc(0.625rem + env(safe-area-inset-bottom));
+    background: var(--background);
+    box-shadow: 0 -1px 0 var(--border), var(--shadow-header);
+    & .btn { justify-self: end; width: auto; max-width: 100%; }
+    & .checkout-summary__secure { display: none; }
+  }
+}
+.checkout-summary__sum {
+  display: none;
+  @media (max-width: 1079px) { display: grid; & span { color: var(--muted-foreground); font-size: var(--text-xs); } & b { font-size: var(--text-lg); line-height: 1.2; white-space: nowrap; font-variant-numeric: tabular-nums; } }
+}
+.checkout-submit__sum { @media (max-width: 1079px) { display: none; } }
+.checkout-summary__secure { display: flex; align-items: center; justify-content: center; gap: 0.375rem; color: var(--muted-foreground); font-size: var(--text-xs); }
+@media (max-width: 1079px) {
+  /* Кнопка оформления заменяет таб-бар (паттерн оформления у всех референсов): таб-бар скрыт, всё прибитое к низу
+     и сам низ страницы поднимаются над кнопкой */
+  :root:has(.checkout) { --tabbar-h: 0px; --buybar-offset: 4.5rem; }
+  body:has(.checkout) { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom)); }
+  body:has(.checkout) .tabbar { display: none; }
+}
+@media (max-width: 479px) {
+  /* На телефоне длинная надпись юрлица — в две строки: кнопка во всю ширину под суммой */
+  .checkout[data-person='yur'] .checkout-summary__footer { grid-template-columns: minmax(0, 1fr); & .btn { justify-self: stretch; width: 100%; } }
+}

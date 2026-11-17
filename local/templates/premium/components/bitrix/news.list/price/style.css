@@ -1,0 +1,18 @@
+/* «Прайс на услуги»: строка поиска и групп; таблица — Table Basecoat */
+.price-list__bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  @media (min-width: 768px) { flex-direction: row; align-items: center; gap: 1rem; }
+}
+.price-group { scroll-margin-top: calc(var(--header-sticky) + 1rem); }
+/* Колонки одной ширины во всех группах: единица и цена стоят друг под другом от таблицы к таблице */
+.price-table { table-layout: fixed; width: 100%; }
+.price-table :is(th, td) { vertical-align: top; white-space: normal; }
+.price-table :is(th, td):first-child { padding-left: 0; }
+.price-table :is(th, td):last-child { width: 6.5rem; padding-right: 0; @media (min-width: 640px) { width: 9rem; } }
+/* Единица: колонка от 640, на телефоне — под ценой */
+.price-table__unit { width: 6rem; }
+@media (max-width: 639.98px) { .price-table__unit { display: none; } }
+@media (min-width: 640px) { .price-table__unit-mobile { display: none; } }

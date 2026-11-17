@@ -1,0 +1,11 @@
+/* «Услуги»: длинный текст карточки (условия конструктора) свёрнут «Показать ещё» (premium_read_more, js/app.js):
+   обрезан по --read-more-h, низ гаснет в фон. ПРОТОТИП: общего правила .read-more в css/components.css нет — когда
+   появится, это правило можно убрать */
+.services-list .read-more { --read-more-h: 7rem; }
+.services-list .read-more.is-collapsed > .read-more__body {
+  max-height: var(--read-more-h);
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, var(--foreground) calc(100% - 3rem), transparent);
+}
+.services-list .read-more__toggle { margin-top: 0.25rem; margin-left: -0.75rem; }
+.services-list .prose :where(ul) { margin-block: 0.5em; }

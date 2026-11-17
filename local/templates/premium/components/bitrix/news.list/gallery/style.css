@@ -1,0 +1,23 @@
+/* Галерея фасадов: сетка квадратов, фото — по центру с обрезкой; при наведении мышью фото чуть приближается */
+.fasady-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  @media (min-width: 640px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (min-width: 1080px) { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+  @media (min-width: 1440px) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+.fasady-gallery__link {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--muted);
+  & img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--duration-slow) var(--ease-out); }
+}
+@media (hover: hover) and (pointer: fine) {
+  .fasady-gallery__link:hover img { transform: scale(1.04); }
+}
+/* Появление фото после «Показать ещё» и смены подборки */
+.fasady-gallery__grid > li.is-shown { animation: gallery-in var(--duration-base) var(--ease-out); }
+@keyframes gallery-in { from { opacity: 0; } to { opacity: 1; } }

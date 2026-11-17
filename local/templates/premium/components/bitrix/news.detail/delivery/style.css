@@ -1,0 +1,11 @@
+/* «Доставка»: вкладки во всю ширину на телефоне, по содержимому — шире; панель вкладки — с отступом сверху */
+.delivery-tabs > [role='tablist'] {
+  @media (max-width: 639.98px) { display: flex; width: 100%; & > [role='tab'] { flex: 1 1 0; } }
+  @media (min-width: 640px) { width: fit-content; & > [role='tab'] { padding-inline: 1.25rem; } }
+}
+.delivery-tabs > [role='tabpanel'] { padding-top: 1.5rem; }
+/* Таблица машин: текст переносится (у Table Basecoat ячейки в одну строку), вес — нет */
+.delivery-trucks td { white-space: normal; }
+.delivery-trucks td:first-child { white-space: nowrap; }
+.delivery-trucks :is(th, td):first-child { padding-left: 1.25rem; }
+.delivery-trucks :is(th, td):last-child { padding-right: 1.25rem; }

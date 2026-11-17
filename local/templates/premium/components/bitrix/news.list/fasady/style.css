@@ -1,0 +1,10 @@
+/* Направления фасадов: описание с сайта свёрнуто «Показать ещё» (premium_read_more, js/app.js) — обрезано по --read-more-h,
+   низ гаснет в фон. ПРОТОТИП: общего правила .read-more в css/components.css нет — когда появится, это можно убрать */
+.fasady-directions .read-more { --read-more-h: 8rem; }
+.fasady-directions .read-more.is-collapsed > .read-more__body {
+  max-height: var(--read-more-h);
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, var(--foreground) calc(100% - 3rem), transparent);
+}
+.fasady-directions .read-more__toggle { margin-top: 0.25rem; margin-left: -0.75rem; }
+.fasady-directions .prose :where(p) { margin-block: 0.5em; }

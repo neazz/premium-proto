@@ -1,0 +1,8 @@
+/* Список заказов (sale.personal.order.list): миниатюры товаров заказа и колонки таблицы.
+   Цвета, радиусы — токены tokens.css; размеры — шаг 0.25rem */
+
+/* Миниатюры заказа (.order-thumbs) — общие: css/components.css (их же выводят главная кабинета и возвраты) */
+
+/* Таблица: строки по центру по вертикали, номер и дата — в первой колонке; кнопки не переносятся */
+.orders-table td { vertical-align: middle; }
+.orders-table td:last-child { width: 1%; white-space: nowrap; }

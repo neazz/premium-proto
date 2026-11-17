@@ -1,0 +1,16 @@
+/* Возврат товара: превью фото — квадраты 80 px в ряд с переносом, «Убрать» — в углу. Токены — tokens.css */
+.return-photos { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.return-photo {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--border);
+  & img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); }
+  & .btn { position: absolute; top: 0.25rem; right: 0.25rem; }
+}
+
+/* «Описание дефектов» обязательно только для причин «…укажите/приложите подробности» (script.js ставит required):
+   пока поле необязательное, звёздочки нет */
+[data-return-form] [data-field]:not(:has(:required)) .req-toggle { display: none; }

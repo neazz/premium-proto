@@ -1,0 +1,263 @@
+/* Корзина (ТЗ 5): раскладка по паттернам (07_Референсы/паттерны/корзина.md). Компоненты — Basecoat (card, alert, empty,
+   button-group степпера), здесь только раскладка и строки. Цвета, радиусы, тени, длительности — токены tokens.css */
+
+.basket { padding-bottom: 3rem; @media (min-width: 768px) { padding-bottom: 4rem; } }
+.basket-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; }
+.basket-head__count { color: var(--muted-foreground); font-size: var(--text-base); font-variant-numeric: tabular-nums; }
+
+.basket-alert { margin-top: 1.5rem; }
+.basket-alert__list { display: grid; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+
+/* Список слева, итог справа (22 rem) — от 1080; уже — итог под списком */
+.basket-layout {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  @media (min-width: 1080px) { grid-template-columns: minmax(0, 1fr) 22rem; align-items: start; gap: 2.5rem; }
+  @media (min-width: 1440px) { gap: 3rem; }
+}
+.basket-main { display: grid; gap: 1.5rem; min-width: 0; }
+
+/* Строка товара. В одну линию (фото, название, количество, сумма, удалить) — только когда списку хватает ширины
+   (контейнер от 46 rem), а не по ширине экрана: на 1080 рядом встаёт итог. Уже — две линии: фото и название сверху,
+   под ними степпер и сумма; «Удалить» — значком в правом верхнем углу */
+.basket-list { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border); container: basket / inline-size; }
+.basket-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  grid-template-areas: 'pic info info' 'pic qty sum';
+  gap: 0.75rem 1rem;
+  align-items: start;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--border);
+  transition: opacity var(--duration-base) var(--ease-out);
+  @container basket (min-width: 30rem) { grid-template-columns: 5rem minmax(0, 1fr) auto; }
+  @container basket (min-width: 46rem) {
+    grid-template-columns: 5rem minmax(0, 1fr) 11rem 7.5rem 2.25rem;
+    grid-template-areas: 'pic info qty sum remove';
+    align-items: center;
+  }
+  /* изменилась цена — подсветка строки; товар закончился — приглушённые фото и название */
+  &.is-changed { background: color-mix(in oklab, var(--warning) 8%, var(--background)); }
+  &.is-changed [data-stepper] { border-radius: calc(var(--radius) - 2px); background: var(--background); }
+  &.is-ended .basket-row__pic img { opacity: 0.55; }
+  &.is-ended .basket-row__name { color: var(--muted-foreground); }
+  /* удаление — строка гаснет и складывается (script.js) */
+  &.is-removing { opacity: 0; }
+}
+.basket-row__pic {
+  grid-area: pic;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  padding: 0.25rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--surface);
+  & img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+  /* текстура декора — во весь квадрат, как на плитке */
+  &.is-texture { padding: 0; & img { object-fit: cover; mix-blend-mode: normal; } }
+}
+.basket-row__info { grid-area: info; display: grid; gap: 0.25rem; min-width: 0; padding-right: 2.25rem; @container basket (min-width: 46rem) { padding-right: 0; } }
+.basket-row__name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-weight: 500;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow-wrap: anywhere;
+  transition: color var(--duration-fast) var(--ease-out);
+  &:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+}
+.basket-row__meta { color: var(--muted-foreground); font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.basket-row__stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  &.is-in { color: var(--success); }
+  &.is-out { color: var(--destructive); }
+}
+.basket-row__note {
+  display: flex;
+  gap: 0.375rem;
+  margin-top: 0.125rem;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.25rem;
+  & > svg { flex: none; margin-top: 0.125rem; color: color-mix(in oklab, var(--warning), black 35%); }
+}
+.basket-row__qty { grid-area: qty; display: grid; gap: 0.375rem; justify-items: start; }
+/* Степперы одной ширины во всех строках, какой бы ни была единица (л., м, шт.) */
+.basket-row [data-stepper] { width: 8.5rem; & > .stepper-qty { flex: 1 1 auto; min-width: 0; } }
+.basket-row__max { color: var(--muted-foreground); font-size: var(--text-xs); }
+.basket-row__sum {
+  grid-area: sum;
+  display: grid;
+  align-self: center;
+  justify-items: end;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  @container basket (min-width: 46rem) { font-size: var(--text-lg); }
+}
+.basket-row__old { color: var(--muted-foreground); font-size: var(--text-xs); font-weight: 400; }
+.basket-row__remove {
+  grid-area: remove;
+  position: absolute;
+  top: 0.625rem;
+  right: -0.375rem;
+  color: var(--muted-foreground);
+  &:hover { color: var(--destructive); }
+  @container basket (min-width: 46rem) { position: static; justify-self: center; }
+}
+
+/* Распил по проекту — карточка Basecoat под товарами */
+.basket-raspil { gap: 0; padding-block: 0; transition: opacity var(--duration-base) var(--ease-out); &.is-removing { opacity: 0; } }
+.basket-raspil > header { position: relative; padding-block: 1.25rem 0; }
+.basket-raspil__remove { position: absolute; top: 1rem; right: 1rem; color: var(--muted-foreground); &:hover { color: var(--destructive); } }
+.basket-raspil__head { display: flex; align-items: flex-start; gap: 0.875rem; padding-right: 2.25rem; }
+.basket-raspil__pic {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--surface);
+  & img { width: 100%; height: 100%; object-fit: cover; }
+}
+.basket-raspil__title { display: flex; align-items: center; gap: 0.375rem; font-size: var(--text-base); font-weight: 600; line-height: 1.35; & svg { color: var(--muted-foreground); } }
+.basket-raspil__decor { margin-top: 0.25rem; font-size: var(--text-sm); overflow-wrap: anywhere; & a { font-weight: 500; &:hover { text-decoration: underline; text-underline-offset: 0.2em; } } }
+.basket-raspil__stats { margin-top: 0.125rem; color: var(--muted-foreground); font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.basket-raspil > section { display: grid; gap: 1rem; padding-block: 1rem; }
+.basket-raspil__rows {
+  display: grid;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  list-style: none;
+  & li { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  & li > span { display: grid; gap: 0.125rem; min-width: 0; }
+  & small { color: var(--muted-foreground); font-size: var(--text-xs); }
+  & b { white-space: nowrap; font-weight: 500; font-variant-numeric: tabular-nums; }
+}
+/* Детали проекта — Collapsible из Basecoat (details): плавно раскрываются, стрелка поворачивается */
+.basket-raspil__parts {
+  font-size: var(--text-sm);
+  & > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.25rem;
+    border-radius: calc(var(--radius) - 2px);
+    font-weight: 500;
+    list-style: none;
+    cursor: pointer;
+    &::-webkit-details-marker { display: none; }
+    &:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  &[open] > summary .nav-chevron { rotate: 180deg; }
+  & > ul { display: grid; gap: 0.5rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
+  & li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.125rem 1rem;
+    padding-block: 0.5rem;
+    border-top: 1px solid var(--border);
+    @container basket-raspil (min-width: 36rem) { grid-template-columns: minmax(0, 1fr) auto minmax(0, 12rem); align-items: baseline; }
+  }
+}
+.basket-raspil > section { container: basket-raspil / inline-size; }
+.basket-raspil > footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding-block: 0 1.25rem;
+}
+.basket-raspil__links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.basket-raspil__total { display: flex; align-items: baseline; gap: 0.75rem; margin-left: auto; & span { color: var(--muted-foreground); font-size: var(--text-sm); } & b { font-size: var(--text-lg); white-space: nowrap; font-variant-numeric: tabular-nums; } }
+
+/* Итог — карточка Basecoat; от 1080 прилипает под шапкой */
+.basket-summary {
+  gap: 0;
+  padding-block: 0;
+  @media (min-width: 1080px) { position: sticky; top: calc(var(--header-sticky) + 1rem); }
+  & > header { padding-block: 1.25rem 0; & h2 { font-size: var(--text-lg); font-weight: 600; } }
+  & > section { display: grid; gap: 1rem; padding-block: 1rem; }
+  & > footer { padding-block: 0 1.25rem; }
+}
+.basket-totals {
+  display: grid;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: var(--text-sm);
+  & > div { display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: 1rem; }
+  & dt { color: var(--muted-foreground); }
+  & dd { margin: 0 0 0 auto; font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  & .is-total { align-items: baseline; margin-top: 0.25rem; padding-top: 0.875rem; border-top: 1px solid var(--border); }
+  & .is-total dt { color: var(--foreground); font-size: var(--text-base); font-weight: 600; }
+  & .is-total dd { font-size: var(--text-2xl); font-weight: 700; }
+}
+/* Вес заказа и машина (ТЗ 5) — плашка с грузовиком под суммой; тяжелее одного рейса — янтарная */
+.basket-weight {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  & > svg { margin-top: 0.0625rem; color: var(--muted-foreground); }
+  & p { display: grid; gap: 0.125rem; }
+  & b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  & span { color: var(--muted-foreground); }
+  &.is-over { background: color-mix(in oklab, var(--warning) 14%, var(--background)); & > svg { color: color-mix(in oklab, var(--warning), black 35%); } }
+}
+.basket-summary__note { color: var(--muted-foreground); font-size: var(--text-xs); line-height: 1.5; }
+/* Промокод в итоге корзины (DEC-051, как у Озона): поле с кнопкой в строку; применённый код — строкой на серой подложке
+   с «Убрать» (внутри карточки — подложка, не рамка: DEC-042) */
+.basket-promo { margin-top: 1rem; }
+.basket-promo__row { display: flex; gap: 0.5rem; & .input { flex: 1 1 auto; min-width: 0; text-transform: uppercase; } & .btn { flex: none; } }
+.basket-promo__applied { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.5rem 0.5rem 0.875rem; border-radius: calc(var(--radius) - 2px); background: var(--muted);
+  & > svg { flex: none; }
+  & p { display: grid; flex: 1 1 auto; min-width: 0; font-size: var(--text-sm); line-height: 1.35; }
+  & span { font-size: var(--text-xs); color: var(--muted-foreground); }
+}
+
+/* Нижняя панель до 1080: сумма, вес и «Оформить заказ» над таб-баром, пока итог не на экране. Выезжает снизу */
+.basket-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: var(--tabbar-h);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem var(--gutter);
+  background: var(--background);
+  box-shadow: 0 -1px 0 var(--border), var(--shadow-header);
+  translate: 0 calc(100% + var(--tabbar-h));
+  visibility: hidden;
+  transition: translate var(--duration-base) var(--ease-out), visibility var(--duration-base);
+  &[data-open] { translate: 0 0; visibility: visible; }
+  @media (min-width: 1080px) { display: none; }
+}
+.basket-bar__info { display: grid; min-width: 0; & b { font-size: var(--text-lg); line-height: 1.2; white-space: nowrap; font-variant-numeric: tabular-nums; } & span { overflow: hidden; color: var(--muted-foreground); font-size: var(--text-xs); white-space: nowrap; text-overflow: ellipsis; } }
+.basket-bar .btn { flex: none; }
+/* Пока панель видна — место под ней, чтобы она не закрывала низ страницы */
+@media (max-width: 1079px) { .basket:has(.basket-bar[data-open]) { padding-bottom: 5.5rem; } }
+
+.basket-empty { margin-top: 1.5rem; }

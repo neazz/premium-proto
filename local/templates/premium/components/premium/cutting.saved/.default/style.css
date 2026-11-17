@@ -1,0 +1,21 @@
+/* Мои расчёты раскроя (DEC-052): карточки расчётов. Внутри карточки — разделитель и подложка, не рамка (DEC-042) */
+.saved-calcs { display: grid; gap: 1rem; @media (min-width: 1440px) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.saved-calc { gap: 0; padding: 0; transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out); }
+.saved-calc.is-removing { opacity: 0; transform: translateY(-0.25rem); }
+.saved-calc__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; padding: 1.25rem 1.25rem 0 1.25rem; & .btn { margin: -0.375rem -0.5rem 0 0; } }
+.saved-calc__title { font-size: var(--text-base); font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.saved-calc__body { display: grid; gap: 1rem; padding: 1rem 1.25rem; }
+.saved-calc__decor { display: flex; align-items: center; gap: 0.75rem; min-width: 0; border-radius: calc(var(--radius) - 2px); transition: color var(--duration-fast) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .saved-calc__decor:hover { color: var(--muted-foreground); } .saved-calc__decor:hover .saved-calc__decor-name { text-decoration: underline; text-underline-offset: 0.2em; } }
+.saved-calc__decor-name { font-size: var(--text-sm); font-weight: 500; overflow-wrap: anywhere; }
+.saved-calc__pic { display: grid; place-items: center; flex: none; width: 3rem; height: 3rem; overflow: hidden; border-radius: calc(var(--radius) - 2px); background: var(--surface); color: var(--muted-foreground); & img { width: 100%; height: 100%; object-fit: cover; } }
+/* Цифры расчёта — на серой подложке тремя колонками; жирное — только сумма */
+.saved-calc__stats {
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 0.25rem 1.5rem; padding: 0.75rem 1rem; border-radius: calc(var(--radius) - 2px); background: var(--muted);
+  & > div { display: grid; gap: 0.125rem; }
+  & dt { font-size: var(--text-xs); color: var(--muted-foreground); }
+  & dd { font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+  & .is-sum { justify-items: end; text-align: right; & dd { font-size: var(--text-base); font-weight: 700; } }
+}
+.saved-calc__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 1rem 1.25rem 1.25rem; border-top: 1px solid var(--border); & .btn { flex: 1 1 9rem; } }
+@media (prefers-reduced-motion: reduce) { .saved-calc { transition-duration: 0ms; } }

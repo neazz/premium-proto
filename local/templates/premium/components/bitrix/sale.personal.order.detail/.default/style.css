@@ -1,0 +1,131 @@
+/* Заказ (sale.personal.order.detail): сводка, детали распила, строки товаров. Цвета, радиусы — токены tokens.css */
+
+/* Шкала этапов заказа — своя раскладка (в Basecoat степпера нет): точка с номером или галочкой и подпись.
+   От 768 — в строку с линией между точками, уже — столбиком с линией слева */
+.order-steps {
+  display: grid;
+  gap: 0.75rem;
+  @media (min-width: 768px) { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; }
+  & li { position: relative; display: flex; align-items: center; gap: 0.625rem; color: var(--muted-foreground); font-size: var(--text-sm);
+    @media (min-width: 768px) { flex-direction: column; align-items: flex-start; gap: 0.5rem; } }
+  /* линия к следующему этапу */
+  & li:not(:last-child)::after { content: ''; position: absolute; left: 0.75rem; top: 1.75rem; bottom: -0.75rem; width: 1px; background: var(--border);
+    @media (min-width: 768px) { left: 2rem; right: 0.5rem; top: 0.75rem; bottom: auto; width: auto; height: 1px; } }
+  & li.is-done:not(:last-child)::after { background: var(--foreground); }
+  & li.is-done, & li.is-current { color: var(--foreground); }
+  & li.is-current { font-weight: 600; }
+}
+.order-steps__dot {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--background);
+  box-shadow: inset 0 0 0 1px var(--border);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  .is-done > & { background: var(--primary); color: var(--primary-foreground); box-shadow: none; }
+  .is-current > & { box-shadow: inset 0 0 0 2px var(--foreground); }
+}
+
+/* Сводка: получение · покупатель и оплата · итоги на сером фоне. 768 — две колонки, итоги строкой ниже; телефон — столбиком */
+.order-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  @media (min-width: 768px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 1440px) { grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(17rem, 0.9fr); }
+}
+.order-summary__col {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: 1.25rem;
+  & + & { border-top: 1px solid var(--border); @media (min-width: 768px) { border-top: 0; border-left: 1px solid var(--border); } }
+  & dt { color: var(--muted-foreground); font-size: var(--text-xs); }
+  & dd { margin: 0.125rem 0 0; font-weight: 500; overflow-wrap: anywhere; }
+}
+.order-summary__totals {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  @media (min-width: 768px) { grid-column: 1 / -1; }
+  @media (min-width: 1440px) { grid-column: auto; border-top: 0; border-left: 1px solid var(--border); border-radius: 0 var(--radius-xl) var(--radius-xl) 0; }
+  & > div { display: flex; justify-content: space-between; gap: 1rem; font-size: var(--text-sm); }
+  & dt { color: var(--muted-foreground); }
+  & dd { margin: 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  & .is-total { margin-top: 0.25rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: var(--text-base); font-weight: 600; & dt { color: var(--foreground); } }
+}
+/* Комментарий к заказу — строкой под сводкой */
+.order-summary__comment { padding: 0.875rem 1.25rem; border-top: 1px solid var(--border); font-size: var(--text-sm); }
+.order-summary:has(+ .order-summary__comment) .order-summary__totals { border-radius: 0; }
+
+/* Стоимость распила — строки «название и пояснение — сумма», итог отчёркнут (как «Ваш расчёт» калькулятора) */
+.order-summary__rows {
+  display: grid;
+  gap: 0.625rem;
+  max-width: 40rem;
+  & li { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: var(--text-sm); }
+  & b { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  & .is-total { padding-top: 0.625rem; border-top: 1px solid var(--border); font-size: var(--text-base); font-weight: 600; }
+}
+
+/* Детали распила на телефоне: номер — колонкой, название и размер, ниже кромка. От 768 — таблица вместо списка */
+.raspil-parts-list {
+  display: grid;
+  @media (min-width: 768px) { display: none; }
+  gap: 0.75rem;
+  & li { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: 0.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+  & li:last-child { padding-bottom: 0; border-bottom: 0; }
+}
+.raspil-parts td { vertical-align: top; }
+
+/* Строка товара — Item из Basecoat: фото 64 px, название и количество, справа сумма и «Вернуть» */
+.order-line {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.75rem;
+  @media (min-width: 768px) { gap: 1rem; }
+}
+.order-line__pic {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--surface);
+  color: var(--muted-foreground);
+  @media (min-width: 768px) { width: 4rem; height: 4rem; }
+  & img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+}
+.order-line__body { flex: 1 1 0%; min-width: 0; gap: 0.25rem; }
+.order-line__name { font-weight: 500; overflow-wrap: anywhere; }
+.order-line__end {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  @media (min-width: 768px) { flex-direction: row; align-items: center; gap: 0.75rem; }
+}
+/* Телефон: сумма и кнопки («В корзину», «Вернуть») — строкой под названием, а не узкой колонкой справа:
+   иначе название сжимается до 4–5 строк. Строка — сетка: фото слева на две строки, справа название и под ним действия */
+@media (max-width: 767px) {
+  .order-line { grid-template-columns: 3.5rem minmax(0, 1fr); grid-template-areas: 'pic body' 'pic end'; align-items: start; }
+  .order-line__body { grid-area: body; }
+  .order-line__end { grid-area: end; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+  .order-line__end > b { margin-right: auto; }
+}
+
+/* Печать заказа (кнопка «Распечатать»): только содержимое заказа, без меню кабинета и действий */
+@media print {
+  .personal-layout > aside, [data-order] > header .btn, [data-order] footer, .order-line .btn, [data-order] > p:last-child { display: none !important; }
+  .personal-layout { display: block; }
+}
