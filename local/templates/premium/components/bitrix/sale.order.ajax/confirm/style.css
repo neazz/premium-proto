@@ -33,41 +33,47 @@
 /* «Открыть приложение банка» — только на телефоне: на компьютере QR сканируют телефоном */
 .order-qr__app { width: 100%; @media (min-width: 768px) { display: none; } }
 
-/* Что дальше — три шага с иконками (adidas): пройденный шаг — зелёным */
-.order-next { display: grid; gap: 1rem; }
-.order-next__title { font-size: var(--text-lg); font-weight: 600; }
+/* Шаги и сводка: от 768 — две колонки, «Что дальше» шире; без шагов (оплата не прошла) — сводка одна */
+.order-done__body { display: grid; gap: 1.5rem; @media (min-width: 768px) { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; gap: 2.5rem; } }
+.order-done__body > :only-child { grid-column: 1 / -1; }
+
+/* Что дальше — шаги вертикально, значки соединены линией (как статус заказа у Озона и Маркета); пройденный — зелёным */
+.order-next { display: grid; gap: 0.875rem; }
+.order-next__title { font-size: var(--text-base); font-weight: 600; }
 .order-next__steps {
   display: grid;
-  gap: 1rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  @media (min-width: 768px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  & li { display: flex; gap: 0.75rem; min-width: 0; @media (min-width: 768px) { flex-direction: column; } }
+  & li { position: relative; display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); column-gap: 0.75rem; padding-bottom: 1rem; }
+  & li:last-child { padding-bottom: 0; }
+  /* Линия от значка к следующему шагу */
+  & li:not(:last-child)::before { content: ''; position: absolute; top: 2rem; bottom: 0.25rem; left: calc(0.875rem - 0.5px); width: 1px; background: var(--border); }
 }
 .order-next__icon {
   display: grid;
-  flex: none;
   place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 999px;
   background: var(--muted);
   color: var(--muted-foreground);
+  & svg { width: 0.875rem; height: 0.875rem; }
   .is-done > & { background: color-mix(in oklab, var(--success) 12%, var(--background)); color: var(--success); }
 }
-.order-next__text { display: grid; gap: 0.25rem; min-width: 0; font-size: var(--text-sm); & > span { color: var(--muted-foreground); line-height: 1.5; } }
+.order-next__text { display: grid; gap: 0.125rem; min-width: 0; padding-top: 0.125rem; font-size: var(--text-sm); & > span { color: var(--muted-foreground); line-height: 1.45; } }
 
-/* Сводка заказа: пары «подпись — значение» */
+/* Сводка заказа: «подпись — значение» одним столбцом на серой подложке (внутри карточки — подложка, не рамка: DEC-042) */
 .order-done__info {
   display: grid;
   margin: 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--muted);
   font-size: var(--text-sm);
-  @media (min-width: 768px) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 2rem; }
-  & > div { display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.5rem; }
+  & > div { display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.375rem; }
+  & > div + div { border-top: 1px solid color-mix(in oklab, var(--border) 70%, transparent); }
   & dt { color: var(--muted-foreground); }
-  & dd { margin: 0; font-weight: 500; text-align: right; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+  & dd { margin: 0; font-weight: 500; text-align: right; overflow-wrap: break-word; hyphens: manual; font-variant-numeric: tabular-nums; }
 }
 .order-done__footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; padding-block: 0 1.75rem; }
